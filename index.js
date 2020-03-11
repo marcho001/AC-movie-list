@@ -1,5 +1,4 @@
 (function () {
-//test
   // write your code here
   const baseURL = 'https://movie-list.alphacamp.io/'
 
@@ -23,7 +22,7 @@
 
   let paginationData = []
 
-
+  console.log(dataPanel)
   // add listener to show modal
 
   dataPanel.addEventListener('click', (e) => {
