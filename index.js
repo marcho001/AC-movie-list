@@ -16,6 +16,8 @@
 
   const pagination = document.querySelector('#pagination')
 
+  const trans = document.querySelector('.trans')
+
   const ITEM_PER_PAGE = 12
 
   const movies = []
@@ -23,6 +25,31 @@
   let paginationData = []
 
   console.log(dataPanel)
+
+  // add listener for chenge view
+
+  trans.addEventListener('click', (e) => {
+
+    // trans監聽器 click data-id change
+
+    if (e.target.matches('.fa-bars')) {
+
+      trans.dataset.id = 2
+
+      getTotalPages(data)
+
+      getPageData(1, data)
+
+    } else if (e.target.matches('.fa-th')) {
+
+      trans.dataset.id = 1
+
+      getTotalPages(data)
+
+      getPageData(1, data)
+    }
+  })
+
   // add listener to show modal
 
   dataPanel.addEventListener('click', (e) => {
@@ -31,20 +58,20 @@
 
       showMovie(e.target.dataset.id)
 
-    } else if(e.target.matches('.btn-add-favorite')){
+    } else if (e.target.matches('.btn-add-favorite')) {
 
       addFavoriteItem(e.target.dataset.id)
 
     }
   })
 
-  searchForm.addEventListener('submit',(e)=>{
+  searchForm.addEventListener('submit', (e) => {
 
     e.preventDefault()
 
     let input = searchInput.value.toLowerCase()
 
-    let results = data.filter((item)=>{
+    let results = data.filter((item) => {
 
       return item.title.toLowerCase().includes(input)
 
@@ -60,11 +87,11 @@
 
   // add page listener
 
-  pagination.addEventListener('click',(e)=>{
+  pagination.addEventListener('click', (e) => {
 
     console.log(e.target.dataset.page)
 
-    if(e.target.tagName === 'A'){
+    if (e.target.tagName === 'A') {
 
       getPageData(e.target.dataset.page)
 
@@ -78,11 +105,14 @@
 
       data.push(...resp.data.results)
 
-      // displayDataList(data)
-
       getTotalPages(data)
 
       getPageData(1, data)
+
+      trans.innerHTML = `<span>
+      <i class="fa fa-th fa-lg click" aria-hidden="true"></i>
+      <i class="fa fa-bars fa-lg" aria-hidden="true"></i>
+    </span>`
 
     })
 
@@ -90,6 +120,9 @@
 
 
   //  function
+
+
+
   // modal show movie detail function
   function showMovie(id) {
 
@@ -118,6 +151,30 @@
         modalDescription.innerText = `${data.description}`
 
       }).catch((err) => { console.log(err) })
+  }
+
+  //change list
+
+  function changeList(data) {
+
+    let htmlContent = ''
+
+    data.forEach(item => {
+
+      htmlContent += `
+      <div class="list-group list-group-flush col-12">
+       <div class="list-group-item d-flex justify-content-between">
+         <span>${item.title}</span>
+         <span>
+           <button class="btn btn-primary btn-show-movie" data-toggle="modal" data-target="#show-movie-modal" data-id="${item.id}">More </button>
+              <button class="btn btn-info btn-add-favorite" data-id="${item.id}">+</button></span>
+        </div>
+</div>
+      `
+
+    })
+    dataPanel.innerHTML = htmlContent
+
   }
 
   //display data list in card function
@@ -150,17 +207,17 @@
 
   // add item to favorite.html
 
-  function addFavoriteItem(id){
+  function addFavoriteItem(id) {
 
     const list = JSON.parse(localStorage.getItem('favoriteMovies')) || []
 
     const movie = data.find(item => item.id === Number(id))
 
-    if(list.some(item => item.id === Number(id))){
+    if (list.some(item => item.id === Number(id))) {
 
       alert(`${movie.title} is already in your favorite list!!`)
 
-    } else{
+    } else {
 
 
       list.push(movie)
@@ -177,13 +234,13 @@
 
   // pagination function
 
-  function getTotalPages(data){
+  function getTotalPages(data) {
 
     let totalPages = Math.ceil(data.length / ITEM_PER_PAGE) || 1
 
     let pageItemContent = ''
 
-    for(let i = 0; i < totalPages; i++){
+    for (let i = 0; i < totalPages; i++) {
 
       pageItemContent += `
       <li class="page-item">
@@ -191,14 +248,14 @@
       </li>
       `
 
-      pagination.innerHTML = pageItemContent
 
+      
     }
-
+      pagination.innerHTML = pageItemContent
   }
   // get page function
 
-  function getPageData(pageNum, data){
+  function getPageData(pageNum, data) {
 
     paginationData = data || paginationData
 
@@ -206,7 +263,17 @@
 
     let pageData = paginationData.slice(offset, offset + ITEM_PER_PAGE)
 
-    displayDataList(pageData)
+    // card or list??
+
+    if (Number(trans.dataset.id) === 1) {
+
+      displayDataList(pageData)
+
+    } else if (Number(trans.dataset.id) === 2) {
+
+      changeList(pageData)
+
+    }
   }
 })()
 
