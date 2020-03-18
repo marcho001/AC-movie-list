@@ -1,7 +1,9 @@
 # AC-movie-list
+https://marcho001.github.io/AC-movie-list/
+
 ### A simple web application for movie fanatic
 
-##Features
+## Features
 - listing movies from movie api
 -searching movies by title
 -add movies to your favorite list
